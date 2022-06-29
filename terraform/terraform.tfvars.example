@@ -1,0 +1,28 @@
+aws_profile = "default"
+
+server_site = {
+    name = "server"
+    region = "server-region"
+    zone = "server-zone"
+    cidr_block = "192.168.100.0/24"
+    vpn_hostnum     = 100
+    vpn_private_key = "server-private-key"
+    vpn_public_key  = "server-public-key"
+}
+
+client_site = {
+  name = "client"
+  region = "client-region"
+  zone = "client-zone"
+  cidr_block = "192.168.101.0/24"
+  vpn_hostnum     = 101
+  vpn_private_key = "client-private-key"
+  vpn_public_key  = "client-public-key"
+}
+
+ami_for_region = {
+  ap-southeast-1 = "ami-02ee763250491e04a"
+  ap-southeast-2 = "ami-0e040c48614ad1327"
+  us-west-2 = "ami-0d70546e43a941d70"
+}
+
