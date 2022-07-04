@@ -77,8 +77,8 @@ resource "aws_security_group_rule" "server_site_wireguard" {
   security_group_id = aws_security_group.server_site_external.id
   type              = "ingress"
   protocol          = "udp"
-  from_port         = 51820
-  to_port           = 51820
+  from_port         = var.vpn_port
+  to_port           = var.vpn_port
   cidr_blocks       = ["${data.aws_instance.vpn_client.public_ip}/32"]
 }
 
@@ -149,26 +149,6 @@ resource "aws_route" "server_site_private_default" {
   ]
 }
 
-resource "aws_route" "server_site_private_remote" {
-  route_table_id = aws_route_table.server_site_private.id
-  network_interface_id   = data.aws_instance.vpn_server.network_interface_id
-  destination_cidr_block = aws_vpc.client_site.cidr_block
-
-  depends_on = [
-    null_resource.vpn_server_ready
-  ]
-}
-
-resource "aws_route" "server_site_private_vpn" {
-  route_table_id = aws_route_table.server_site_private.id
-  network_interface_id   = data.aws_instance.vpn_server.network_interface_id
-  destination_cidr_block = var.vpn_cidr_block
-
-  depends_on = [
-    null_resource.vpn_server_ready
-  ]
-}
-
 
 ## the vpn server
 
@@ -183,7 +163,7 @@ resource "aws_spot_instance_request" "vpn_server" {
   associate_public_ip_address = true
   source_dest_check           = false
   disable_api_termination     = false
-  user_data                   = templatefile("templates/ec2-setup-vpn-instance.sh.tpl", {
+  user_data                   = templatefile("templates/ec2-setup-instance.sh.tpl", {
       server_name = "vpn-server"
     })
   
@@ -194,12 +174,6 @@ resource "aws_spot_instance_request" "vpn_server" {
   tags = {
     Name = "${local.server_site_name}.vpn"
   }
-  
-  # the gateway route needs to be in place so the 
-  # instance setup scripts can run
-  depends_on = [
-    aws_route.server_site_public_default
-  ]
 }
 
 data "aws_instance" "vpn_server" {
@@ -281,7 +255,7 @@ resource "aws_spot_instance_request" "nfs_server" {
   associate_public_ip_address = false
   source_dest_check           = true
   disable_api_termination     = false
-  user_data                   = templatefile("templates/ec2-setup-prv-instance.sh.tpl", {
+  user_data                   = templatefile("templates/ec2-setup-instance.sh.tpl", {
       server_name = "nfs-server"
   })
   
@@ -298,12 +272,6 @@ resource "aws_spot_instance_request" "nfs_server" {
   tags = {
     Name = "${local.server_site_name}.nfs"
   }
-  
-  # the gateway route needs to be in place so the 
-  # instance setup scripts can run
-  depends_on = [
-    aws_route.server_site_private_default
-  ]
 }
 
 data "aws_instance" "nfs_server" {

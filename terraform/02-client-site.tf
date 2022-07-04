@@ -168,30 +168,6 @@ resource "aws_route" "client_site_private_default" {
   ]
 }
 
-resource "aws_route" "client_site_private_remote" {
-  provider = aws.client
-  
-  route_table_id = aws_route_table.client_site_private.id
-  network_interface_id   = data.aws_instance.vpn_client.network_interface_id
-  destination_cidr_block = aws_vpc.server_site.cidr_block
-
-  depends_on = [
-    null_resource.vpn_client_ready
-  ]
-}
-
-resource "aws_route" "client_site_private_vpn" {
-  provider = aws.client
-  
-  route_table_id = aws_route_table.client_site_private.id
-  network_interface_id   = data.aws_instance.vpn_client.network_interface_id
-  destination_cidr_block = var.vpn_cidr_block
-
-  depends_on = [
-    null_resource.vpn_client_ready
-  ]
-}
-
 
 ## the vpn client
 
@@ -208,7 +184,7 @@ resource "aws_spot_instance_request" "vpn_client" {
   associate_public_ip_address = true
   source_dest_check           = false
   disable_api_termination     = false
-  user_data                   = templatefile("templates/ec2-setup-vpn-instance.sh.tpl", {
+  user_data                   = templatefile("templates/ec2-setup-instance.sh.tpl", {
       server_name = "vpn-client"
     })
   
@@ -219,12 +195,6 @@ resource "aws_spot_instance_request" "vpn_client" {
   tags = {
     Name = "${local.client_site_name}.vpn"
   }
-  
-  # the gateway route needs to be in place so the 
-  # instance setup scripts can run
-  depends_on = [
-    aws_route.client_site_public_default
-  ]
 }
 
 data "aws_instance" "vpn_client" {
@@ -315,7 +285,7 @@ resource "aws_spot_instance_request" "nfs_cache" {
     encrypted = true
   }
   
-  user_data = templatefile("templates/ec2-setup-prv-instance.sh.tpl", {
+  user_data = templatefile("templates/ec2-setup-instance.sh.tpl", {
       server_name = "nfs-cache"
   })
   
@@ -326,12 +296,6 @@ resource "aws_spot_instance_request" "nfs_cache" {
   tags = {
     Name = "${local.client_site_name}.nfs-cache"
   }
-  
-  # the gateway route needs to be in place so the 
-  # instance setup scripts can run
-  depends_on = [
-    aws_route.client_site_private_default
-  ]
 }
 
 data "aws_instance" "nfs_cache" {
@@ -374,7 +338,7 @@ resource "aws_spot_instance_request" "nfs_client" {
   associate_public_ip_address = false
   source_dest_check           = true
   disable_api_termination     = false
-  user_data                   = templatefile("templates/ec2-setup-prv-instance.sh.tpl", {
+  user_data                   = templatefile("templates/ec2-setup-instance.sh.tpl", {
       server_name = "nfs-client"
     })
   
@@ -385,12 +349,6 @@ resource "aws_spot_instance_request" "nfs_client" {
   tags = {
     Name = "${local.client_site_name}.nfs-client"
   }
-  
-  # the gateway route needs to be in place so the 
-  # instance setup scripts can run
-  depends_on = [
-    aws_route.client_site_private_default
-  ]
 }
 
 data "aws_instance" "nfs_client" {

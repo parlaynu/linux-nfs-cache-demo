@@ -12,7 +12,7 @@ resource "aws_spot_instance_request" "prometheus" {
   associate_public_ip_address = false
   source_dest_check           = true
   disable_api_termination     = false
-  user_data                   = templatefile("templates/ec2-setup-prv-instance.sh.tpl", {
+  user_data                   = templatefile("templates/ec2-setup-instance.sh.tpl", {
       server_name = "prometheus"
     })
   
@@ -26,9 +26,9 @@ resource "aws_spot_instance_request" "prometheus" {
   
   # the gateway route needs to be in place so the 
   # instance setup scripts can run
-  depends_on = [
+  /*depends_on = [
     aws_route.client_site_private_default
-  ]
+  ]*/
 }
 
 data "aws_instance" "prometheus" {
