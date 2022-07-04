@@ -19,6 +19,7 @@ locals {
 
 
 locals {
+  gateway_role = "gateway"
   wireguard_server_role = "wireguard_server"
   wireguard_client_role = "wireguard_client"
   prometheus_role = "prometheus"
@@ -27,6 +28,14 @@ locals {
   nfs_cache_role = "nfs_cache"
   nfs_client_role = "nfs_client"
   fsutils_role = "fsutils"
+}
+
+
+resource "template_dir" "gateway" {
+  source_dir = "templates/ansible-roles/${local.gateway_role}"
+  destination_dir = "local/ansible/roles/${local.gateway_role}"
+  
+  vars = {}
 }
 
 

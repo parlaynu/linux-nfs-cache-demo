@@ -1,9 +1,3 @@
-- name: enable kernel forwarding
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: '1'
-    sysctl_file: /etc/sysctl.d/20-forward.conf
-
 - name: install wireguard config file
   template:
     src: wireguard.conf
@@ -32,10 +26,10 @@
   notify:
     - restart wireguard
 
-- name: install wireguard post-down script
+- name: install wireguard pre-down script
   template:
-    src: post-down.sh
-    dest: /etc/wireguard/scripts/post-down.sh
+    src: pre-down.sh
+    dest: /etc/wireguard/scripts/pre-down.sh
     owner: root
     group: root
     mode: 0750

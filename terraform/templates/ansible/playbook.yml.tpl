@@ -1,4 +1,14 @@
 ---
+- hosts: gateways
+  become: yes
+  gather_facts: no
+  vars:
+    ansible_python_interpreter: "/usr/bin/env python3"
+  tasks:
+  - import_role:
+      name: ${gateway_role}
+
+
 - hosts: vpn_servers
   become: yes
   gather_facts: no

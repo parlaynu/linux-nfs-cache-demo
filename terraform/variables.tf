@@ -50,6 +50,10 @@ variable "vpn_cidr_block" {
   default = "192.168.99.0/24"
 }
 
+variable "vpn_port" {
+  default = 51820
+}
+
 variable "aws_profile" {
   default = "default"
 }

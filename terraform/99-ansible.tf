@@ -13,15 +13,16 @@ resource "local_file" "run_playbook" {
 
 resource "local_file" "playbook" {
   content = templatefile("templates/ansible/playbook.yml.tpl", {
-      wireguard_server_role = local.wireguard_server_role,
-      wireguard_client_role = local.wireguard_client_role,
-      prometheus_role = local.prometheus_role,
-      prometheus_node_role = local.prometheus_node_role,
-      nfs_server_role = local.nfs_server_role,
-      nfs_cache_role = local.nfs_cache_role,
-      nfs_client_role = local.nfs_client_role,
-      fsutils_role = local.fsutils_role,
-    })
+    gateway_role = local.gateway_role,
+    wireguard_server_role = local.wireguard_server_role,
+    wireguard_client_role = local.wireguard_client_role,
+    prometheus_role = local.prometheus_role,
+    prometheus_node_role = local.prometheus_node_role,
+    nfs_server_role = local.nfs_server_role,
+    nfs_cache_role = local.nfs_cache_role,
+    nfs_client_role = local.nfs_client_role,
+    fsutils_role = local.fsutils_role,
+  })
   filename = "local/ansible/playbook.yml"
 }
 
@@ -31,16 +32,19 @@ resource "local_file" "playbook" {
 resource "local_file" "hostvars_vpn_server" {
 
   content = templatefile("templates/ansible/hostvars-vpn-server.yml.tpl", {
-    server_name      = "vpn-server",
-    public_ip        = data.aws_instance.vpn_server.public_ip,
-    private_ip       = data.aws_instance.vpn_server.private_ip
-    cidr_block       = aws_vpc.server_site.cidr_block
+    server_name       = "vpn-server",
+    public_ip         = data.aws_instance.vpn_server.public_ip,
+    private_ip        = data.aws_instance.vpn_server.private_ip
 
-    vpn_cidr_block   = var.vpn_cidr_block
-    vpn_netlen       = split("/", var.vpn_cidr_block)[1]
-    vpn_ip           = cidrhost(var.vpn_cidr_block, var.server_site.vpn_hostnum)
-    vpn_private_key  = var.server_site.vpn_private_key,
-    vpn_listen_port  = 51820
+    iface_name        = "eth0"
+    local_cidr_block  = aws_vpc.server_site.cidr_block
+    remote_cidr_block = aws_vpc.client_site.cidr_block
+
+    vpn_cidr_block    = var.vpn_cidr_block
+    vpn_netlen        = split("/", var.vpn_cidr_block)[1]
+    vpn_ip            = cidrhost(var.vpn_cidr_block, var.server_site.vpn_hostnum)
+    vpn_private_key   = var.server_site.vpn_private_key,
+    vpn_listen_port   = var.vpn_port
     
     peers = [
       {
@@ -61,15 +65,18 @@ resource "local_file" "hostvars_vpn_server" {
 resource "local_file" "hostvars_vpn_client" {
 
   content = templatefile("templates/ansible/hostvars-vpn-client.yml.tpl", {
-    server_name      = "vpn-client",
-    public_ip        = data.aws_instance.vpn_client.public_ip,
-    private_ip       = data.aws_instance.vpn_client.private_ip
-    cidr_block       = aws_vpc.client_site.cidr_block
+    server_name       = "vpn-client",
+    public_ip         = data.aws_instance.vpn_client.public_ip,
+    private_ip        = data.aws_instance.vpn_client.private_ip
+    
+    iface_name        = "eth0"
+    local_cidr_block  = aws_vpc.client_site.cidr_block
+    remote_cidr_block = aws_vpc.server_site.cidr_block
 
-    vpn_cidr_block   = var.vpn_cidr_block
-    vpn_netlen       = split("/", var.vpn_cidr_block)[1]
-    vpn_ip           = cidrhost(var.vpn_cidr_block, var.client_site.vpn_hostnum)
-    vpn_private_key  = var.client_site.vpn_private_key,
+    vpn_cidr_block    = var.vpn_cidr_block
+    vpn_netlen        = split("/", var.vpn_cidr_block)[1]
+    vpn_ip            = cidrhost(var.vpn_cidr_block, var.client_site.vpn_hostnum)
+    vpn_private_key   = var.client_site.vpn_private_key,
 
     peers = [
       {
@@ -79,7 +86,7 @@ resource "local_file" "hostvars_vpn_client" {
         private_ip = data.aws_instance.vpn_server.private_ip
         vpn_public_key = var.server_site.vpn_public_key
         vpn_ip = cidrhost(var.vpn_cidr_block, var.server_site.vpn_hostnum)
-        vpn_listen_port = 51820
+        vpn_listen_port = var.vpn_port
       }
     ]
   })

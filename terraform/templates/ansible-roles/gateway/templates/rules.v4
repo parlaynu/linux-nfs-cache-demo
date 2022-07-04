@@ -1,0 +1,17 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -o {{ iface_name }} -d {{ local_cidr_block }} -j ACCEPT
+-A POSTROUTING -o {{ iface_name }} -d {{ remote_cidr_block }} -j ACCEPT
+-A POSTROUTING -o {{ iface_name }} -d {{ vpn_cidr_block }} -j ACCEPT
+-A POSTROUTING -o {{ iface_name }} -j MASQUERADE
+COMMIT
+

@@ -22,7 +22,7 @@ provider "aws" {
 
 ## my public ip address - used in security groups
 data "external" "my_public_ip" {
-  program = ["scripts/my-public-ip.sh"]
+  program = ["../scripts/my-public-ip.sh"]
 }
 
 
