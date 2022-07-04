@@ -121,7 +121,7 @@ From within the terraform directory, log into the nfs-client:
 
 To read all the files in the nfs mount point, run:
 
-    readall -n 4 /shows/test
+    fsreadall -n 4 /shows/test
 
 This will read all the files through the nfs-cache and save the contents in the local cache directory. It also verifies 
 the sha256 content has of the file matches the file name.
