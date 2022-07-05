@@ -1,0 +1,34 @@
+- name: install prometheus
+  apt:
+    name: prometheus
+
+- name: install prometheus configuration
+  template:
+    src: prometheus.yml
+    dest: /etc/prometheus/prometheus.yml
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - restart prometheus
+
+- name: install grafana repository key
+  apt_key:
+    url: https://packages.grafana.com/gpg.key
+    state: present
+
+- name: add grafana repository
+  apt_repository:
+    repo: deb https://packages.grafana.com/oss/deb stable main
+    state: present
+
+- name: install grafana
+  apt:
+    name: grafana
+
+- name: start grafana
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+    daemon_reload: yes

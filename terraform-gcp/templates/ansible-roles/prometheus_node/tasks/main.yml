@@ -1,0 +1,4 @@
+- name: install prometheus node exporter
+  apt:
+    name: prometheus-node-exporter
+    update_cache: yes

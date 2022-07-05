@@ -1,0 +1,22 @@
+- name: install golang
+  apt:
+    name: golang
+
+- name: install make
+  apt:
+    name: make
+
+- name: clone repository
+  git:
+    repo: https://github.com/parlaynu/fsutils.git
+    dest: fsutils
+
+- name: build tools
+  shell: cd fsutils && make all
+
+- name: install tools
+  copy:
+    remote_src: yes
+    src: fsutils/bin/
+    dest: bin
+
