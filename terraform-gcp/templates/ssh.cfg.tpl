@@ -12,7 +12,7 @@ Host nfs-cache
   Hostname ${nfs_cache_ip}
   ProxyJump vpn-client
 
-Host nfs-client-1
+Host nfs-client nfs-client-1
   Hostname ${nfs_client_1_ip}
   ProxyJump vpn-client
 
