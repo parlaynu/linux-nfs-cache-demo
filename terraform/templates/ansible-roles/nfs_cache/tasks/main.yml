@@ -13,7 +13,7 @@
 - name: format cache disk
   filesystem:
     fstype: ext4
-    dev: "{{ external_disk }}1"
+    dev: "/dev/disk/by-partlabel/CACHE"
 
 - name: mount cache disk
   mount:

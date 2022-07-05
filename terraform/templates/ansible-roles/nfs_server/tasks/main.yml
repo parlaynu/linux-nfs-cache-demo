@@ -13,7 +13,7 @@
 - name: format shows disk
   filesystem:
     fstype: ext4
-    dev: "{{ external_disk }}1"
+    dev: "/dev/disk/by-partlabel/SHOWS"
 
 - name: mount shows disk
   mount:
