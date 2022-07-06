@@ -5,7 +5,7 @@ locals {
 }
 
 
-## nfs client
+## prometheus/grafana server
 
 resource "google_compute_instance" "prometheus" {
   name         = "prometheus"

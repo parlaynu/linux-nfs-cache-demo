@@ -20,7 +20,7 @@ provider "aws" {
 }
 
 
-## my public ip address - used in security groups
+## my public ip address - allow ssh from this address
 data "external" "my_public_ip" {
   program = ["../scripts/my-public-ip.sh"]
 }

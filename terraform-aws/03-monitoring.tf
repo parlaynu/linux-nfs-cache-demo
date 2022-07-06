@@ -23,12 +23,6 @@ resource "aws_spot_instance_request" "prometheus" {
   tags = {
     Name = "${local.client_site_name}.prometheus"
   }
-  
-  # the gateway route needs to be in place so the 
-  # instance setup scripts can run
-  /*depends_on = [
-    aws_route.client_site_private_default
-  ]*/
 }
 
 data "aws_instance" "prometheus" {
