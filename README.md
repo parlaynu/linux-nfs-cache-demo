@@ -32,7 +32,7 @@ The core requirements are:
 For AWS:
 * follow the getting started guide [here](https://learn.hashicorp.com/tutorials/terraform/aws-build?in=terraform/aws-get-started)
 
-For GCP
+For GCP:
 * follow the getting started guide [here](https://registry.terraform.io/providers/hashicorp/google/latest/docs/guides/getting_started)
 
 ### Building Cloud Infrastructure
@@ -57,7 +57,7 @@ NOTE: these aren't valid keys.
 
 #### Prepare Terraform
 
-From within the terraform directory (terraform-aws or terraform-gcp), copy the file `terraform.tfvars.examples` to `terraform.tfvars` and 
+From within the terraform directory (`terraform-aws` or `terraform-gcp`), copy the file `terraform.tfvars.examples` to `terraform.tfvars` and 
 customize to your environment.
 
 For both environments:
