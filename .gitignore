@@ -1,0 +1,15 @@
+# local work
+.DS_Store
+local/
+
+# ca files
+*.key
+*.crt
+
+# terraform working state
+*.tfvars
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.*
+

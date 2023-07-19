@@ -1,0 +1,17 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING -o {{ iface_name }} -d {{ local_cidr_block }} -j ACCEPT
+{% for peer in peers %}
+-A POSTROUTING -o {{ iface_name }} -d {{ peer.public_ip }}/32 -j ACCEPT
+{% endfor %}
+-A POSTROUTING -o {{ iface_name }} -j MASQUERADE
+COMMIT

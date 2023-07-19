@@ -1,0 +1,56 @@
+- name: install nfs server
+  apt:
+    name: nfs-kernel-server
+
+- name: partition cache disk
+  parted:
+    device: "{{ external_disk }}"
+    name: CACHE
+    number: 1
+    label: gpt
+    state: present
+
+- name: format cache disk
+  filesystem:
+    fstype: ext4
+    dev: "/dev/disk/by-partlabel/CACHE"
+
+- name: mount cache disk
+  mount:
+    path: "/var/cache/fscache"
+    src: PARTLABEL=CACHE
+    fstype: ext4
+    opts: "acl,user_xattr,nofail"
+    state: mounted
+
+- name: install cachefilesd
+  apt:
+    name: cachefilesd
+
+- name: enable cachefilesd
+  lineinfile:
+    path: /etc/default/cachefilesd
+    regexp: '^.*(RUN=yes)'
+    line: "RUN=yes"
+  register: cachefilesd
+
+- name: reboot server
+  reboot:
+  when: cachefilesd.changed
+
+- name: mount shows nfs
+  mount:
+    path: "/shows"
+    src: "{{ nfs_server }}:/shows"
+    fstype: nfs
+    opts: "vers=4,fsc,hard,softreval,nosuid,nofail"
+    state: mounted
+
+- name: add export entry
+  lineinfile:
+    path: /etc/exports
+    regexp: '^/shows'
+    line: "/shows   {{ export_client }}(fsid={{ export_fs_uuid }},mp,rw,async,no_subtree_check,root_squash)"
+
+- name: export the filesystem
+  shell: exportfs  {{ export_client }}:/shows

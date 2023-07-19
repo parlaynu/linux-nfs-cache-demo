@@ -1,0 +1,29 @@
+- name: enable kernel forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_file: /etc/sysctl.d/20-forward.conf
+
+- name: install net-tools
+  apt:
+    name: net-tools
+    update_cache: yes
+
+- name: install wireguard-tools
+  apt:
+    name: wireguard-tools
+
+- name: install iptables-persistent
+  apt:
+    name: iptables-persistent
+
+- name: install iptables rules
+  template:
+    src: rules.v4
+    dest: /etc/iptables/rules.v4
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload iptables
+

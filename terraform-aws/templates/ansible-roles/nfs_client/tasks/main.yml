@@ -1,0 +1,12 @@
+- name: install nfs client
+  apt:
+    name: nfs-common
+
+- name: mount shows nfs
+  mount:
+    path: "/shows"
+    src: "{{ nfs_server }}:/shows"
+    fstype: nfs
+    opts: "vers=4,rw,hard,softreval,nosuid,nofail"
+    state: mounted
+
